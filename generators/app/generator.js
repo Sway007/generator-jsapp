@@ -31,9 +31,9 @@ class default_1 extends yeoman_generator_1.default {
             this.answer = yield this.prompt([
                 {
                     type: "input",
-                    name: "name",
-                    message: "Project name: ",
-                    default: this.appname,
+                    name: "appName",
+                    message: "App name: ",
+                    default: "js-app",
                 },
                 {
                     type: "list",
@@ -44,13 +44,21 @@ class default_1 extends yeoman_generator_1.default {
             ]);
         });
     }
-    path() {
-        this.log("root path: ", this.destinationRoot());
-        this.log("context root: ", this.contextRoot);
-        this.log("template path: ", this.sourceRoot());
+    paths() {
+        return __awaiter(this, void 0, void 0, function* () {
+            const app = this.answer.appName || "js-app";
+            if (fs_1.default.existsSync(app)) {
+                this.log(chalk_1.default.bgRedBright(`Directory ${app} has already exist!`));
+                process.exit(1);
+            }
+            const d = this.destinationPath(app);
+            this.log("change dir to ", d);
+            yield fs_1.default.promises.mkdir(d).then(() => {
+                this.destinationRoot(d);
+            });
+        });
     }
     install() {
-        // if (this.options.useLocal) return;
         this.log(chalk_1.default.green("Installing ..."));
         this.npmInstall();
     }

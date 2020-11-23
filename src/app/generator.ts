@@ -22,9 +22,9 @@ export default class extends Generator {
     this.answer = await this.prompt([
       {
         type: "input",
-        name: "name",
-        message: "Project name: ",
-        default: this.appname,
+        name: "appName",
+        message: "App name: ",
+        default: "js-app",
       },
       {
         type: "list",
@@ -35,10 +35,17 @@ export default class extends Generator {
     ]);
   }
 
-  path() {
-    this.log("root path: ", this.destinationRoot());
-    this.log("context root: ", this.contextRoot);
-    this.log("template path: ", this.sourceRoot());
+  async paths() {
+    const app = this.answer.appName || "js-app";
+    if (fs.existsSync(app)) {
+      this.log(chalk.bgRedBright(`Directory ${app} has already exist!`));
+      process.exit(1);
+    }
+    const d = this.destinationPath(app);
+    this.log("change dir to ", d);
+    await fs.promises.mkdir(d).then(() => {
+      this.destinationRoot(d);
+    });
   }
 
   install() {
